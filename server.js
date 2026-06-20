@@ -1,4 +1,4 @@
-require("dotenv").config();
+﻿require("dotenv").config();
 
 const express = require("express");
 const cors    = require("cors");
@@ -332,7 +332,7 @@ app.post("/api/fulfill/:id", adminOnly, async (req, res) => {
 // ─── Start ────────────────────────────────────────────────────────────────────
 if (require.main === module) {
   const PORT = process.env.PORT || 4242;
-  app.listen(PORT, () => console.log(`Petshub server running on port ${PORT}`));
+  app.listen(PORT, () => console.log(`PetsHub server running on port ${PORT}`));
 }
 
 module.exports = app;
