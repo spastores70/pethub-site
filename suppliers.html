@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Suppliers — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Supplier Dashboard</h1>
+    <p>Manage dropshipping suppliers and fulfillment settings.</p>
+  </div>
+
+  <div class="supplier-grid">
+
+    <div class="supplier-card">
+      <h2>CJ Dropshipping</h2>
+      <p>Large pet product catalog with global fulfillment.</p>
+
+      <div class="supplier-status" id="cj-status">Not Connected</div>
+
+      <button onclick="connectSupplier('cj')">Connect CJ</button>
+      <button class="clear-btn" onclick="disconnectSupplier('cj')">Disconnect</button>
+    </div>
+
+    <div class="supplier-card">
+      <h2>Zendrop</h2>
+      <p>Beginner-friendly supplier platform for ecommerce stores.</p>
+
+      <div class="supplier-status" id="zendrop-status">Not Connected</div>
+
+      <button onclick="connectSupplier('zendrop')">Connect Zendrop</button>
+      <button class="clear-btn" onclick="disconnectSupplier('zendrop')">Disconnect</button>
+    </div>
+
+    <div class="supplier-card">
+      <h2>Spocket</h2>
+      <p>US/EU suppliers with faster shipping options.</p>
+
+      <div class="supplier-status" id="spocket-status">Not Connected</div>
+
+      <button onclick="connectSupplier('spocket')">Connect Spocket</button>
+      <button class="clear-btn" onclick="disconnectSupplier('spocket')">Disconnect</button>
+    </div>
+
+  </div>
+
+  <div class="fulfillment-box">
+
+    <div>
+      <h2>Auto Fulfillment</h2>
+      <p>When enabled, paid orders will be marked ready to send to supplier.</p>
+    </div>
+
+    <label class="switch">
+      <input type="checkbox" id="auto-fulfillment" onchange="toggleFulfillment()">
+      <span class="slider"></span>
+    </label>
+
+  </div>
+
+  <div class="supplier-note">
+    <h2>Next Real Integration Step</h2>
+    <p>
+      This dashboard saves supplier status locally for now. Later we connect real API keys
+      from CJ Dropshipping, Zendrop, or Spocket using a secure backend server.
+    </p>
+  </div>
+
+</section>
+
+<script>
+let supplierSettings = JSON.parse(localStorage.getItem("petsDepotSuppliers")) || {
+  cj: false,
+  zendrop: false,
+  spocket: false,
+  autoFulfillment: false
+};
+
+function renderSuppliers() {
+  updateStatus("cj");
+  updateStatus("zendrop");
+  updateStatus("spocket");
+
+  document.getElementById("auto-fulfillment").checked =
+    supplierSettings.autoFulfillment;
+}
+
+function updateStatus(name) {
+  const statusBox = document.getElementById(name + "-status");
+
+  if (supplierSettings[name]) {
+    statusBox.innerText = "Connected";
+    statusBox.classList.add("connected");
+  } else {
+    statusBox.innerText = "Not Connected";
+    statusBox.classList.remove("connected");
+  }
+}
+
+function saveSupplierSettings() {
+  localStorage.setItem("petsDepotSuppliers", JSON.stringify(supplierSettings));
+}
+
+function connectSupplier(name) {
+  supplierSettings[name] = true;
+  saveSupplierSettings();
+  renderSuppliers();
+  alert(name.toUpperCase() + " connected in demo mode.");
+}
+
+function disconnectSupplier(name) {
+  supplierSettings[name] = false;
+  saveSupplierSettings();
+  renderSuppliers();
+}
+
+function toggleFulfillment() {
+  supplierSettings.autoFulfillment =
+    document.getElementById("auto-fulfillment").checked;
+
+  saveSupplierSettings();
+}
+
+renderSuppliers();
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

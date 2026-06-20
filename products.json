@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Orthopedic Dog Bed",
+    "price": 49.99,
+    "category": "Dogs",
+    "badge": "Best Seller",
+    "description": "Luxury memory foam bed",
+    "image": "assets/product1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Pet Water Fountain",
+    "price": 29.99,
+    "category": "Cats",
+    "badge": "Trending",
+    "description": "Fresh water all day",
+    "image": "assets/product2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Slow Feeder Bowl",
+    "price": 18.99,
+    "category": "Dogs",
+    "badge": "Popular",
+    "description": "Healthy feeding bowl",
+    "image": "assets/product3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Interactive Cat Toy",
+    "price": 16.99,
+    "category": "Cats",
+    "badge": "Cat Pick",
+    "description": "Keep cats active",
+    "image": "assets/product4.jpg"
+  }
+]

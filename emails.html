@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Email Notifications — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Email Notifications</h1>
+    <p>Create customer email previews for order updates.</p>
+  </div>
+
+  <div class="email-dashboard">
+
+    <div class="email-control-box">
+      <h2>Choose Order</h2>
+
+      <label>Customer Order</label>
+      <select id="order-select"></select>
+
+      <label>Email Type</label>
+      <select id="email-type">
+        <option value="received">Order Received</option>
+        <option value="shipped">Order Shipped</option>
+        <option value="delivered">Order Delivered</option>
+      </select>
+
+      <button onclick="generateEmail()">Generate Email</button>
+      <button class="clear-btn" onclick="copyEmail()">Copy Email</button>
+    </div>
+
+    <div class="email-preview-box">
+      <h2>Email Preview</h2>
+
+      <div class="email-preview">
+        <h3 id="email-subject">Subject will appear here</h3>
+        <p id="email-to">To: customer@email.com</p>
+
+        <hr>
+
+        <div id="email-body">
+          Select an order and email type, then click Generate Email.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+let orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+
+const orderSelect = document.getElementById("order-select");
+
+function loadOrders() {
+  if (orders.length === 0) {
+    orderSelect.innerHTML = `<option>No orders available</option>`;
+    return;
+  }
+
+  orderSelect.innerHTML = "";
+
+  orders.slice().reverse().forEach(order => {
+    orderSelect.innerHTML += `
+      <option value="${order.id}">
+        Order #${order.id} - ${order.customer.name} - $${Number(order.total).toFixed(2)}
+      </option>
+    `;
+  });
+}
+
+function findSelectedOrder() {
+  const selectedId = orderSelect.value;
+
+  return orders.find(order => String(order.id) === String(selectedId));
+}
+
+function generateEmail() {
+  const order = findSelectedOrder();
+  const type = document.getElementById("email-type").value;
+
+  if (!order) {
+    alert("No order selected.");
+    return;
+  }
+
+  let subject = "";
+  let body = "";
+
+  if (type === "received") {
+    subject = `Your PetsDepot Order #${order.id} Has Been Received`;
+
+    body = `
+      <p>Hi ${order.customer.name},</p>
+
+      <p>Thank you for your order from PetsDepot. We received your order and it is now being prepared.</p>
+
+      <p><strong>Order Number:</strong> #${order.id}</p>
+      <p><strong>Order Total:</strong> $${Number(order.total).toFixed(2)}</p>
+      <p><strong>Status:</strong> ${order.status || "Paid"}</p>
+
+      <p>You can track your order anytime using your order number and email address on our Track Order page.</p>
+
+      <p>Thank you for shopping with PetsDepot!</p>
+    `;
+  }
+
+  if (type === "shipped") {
+    subject = `Your PetsDepot Order #${order.id} Has Shipped`;
+
+    body = `
+      <p>Hi ${order.customer.name},</p>
+
+      <p>Good news! Your PetsDepot order has shipped.</p>
+
+      <p><strong>Order Number:</strong> #${order.id}</p>
+      <p><strong>Shipping Carrier / Supplier:</strong> ${order.supplier || "Supplier preparing shipment"}</p>
+      <p><strong>Tracking Number:</strong> ${order.tracking || "Tracking will be available soon"}</p>
+
+      <p>Please allow time for the tracking information to update.</p>
+
+      <p>Thank you for choosing PetsDepot!</p>
+    `;
+  }
+
+  if (type === "delivered") {
+    subject = `Your PetsDepot Order #${order.id} Was Delivered`;
+
+    body = `
+      <p>Hi ${order.customer.name},</p>
+
+      <p>Your PetsDepot order has been marked as delivered.</p>
+
+      <p><strong>Order Number:</strong> #${order.id}</p>
+      <p><strong>Delivered To:</strong> ${order.customer.address}, ${order.customer.city}, ${order.customer.state} ${order.customer.zip}</p>
+
+      <p>We hope your pet loves their new products. Thank you for shopping with PetsDepot!</p>
+    `;
+  }
+
+  document.getElementById("email-subject").innerText = subject;
+  document.getElementById("email-to").innerText = "To: " + order.customer.email;
+  document.getElementById("email-body").innerHTML = body;
+}
+
+function copyEmail() {
+  const subject = document.getElementById("email-subject").innerText;
+  const to = document.getElementById("email-to").innerText;
+  const body = document.getElementById("email-body").innerText;
+
+  const text = subject + "\n" + to + "\n\n" + body;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Email copied!");
+}
+
+loadOrders();
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>Quick overview of your PetsDepot store.</p>
+  </div>
+
+  <div class="dashboard-grid">
+
+    <a href="analytics.html" class="dashboard-card">
+      <h3>Total Sales</h3>
+      <p id="dash-sales">$0.00</p>
+    </a>
+
+    <a href="orders.html" class="dashboard-card">
+      <h3>Orders</h3>
+      <p id="dash-orders">0</p>
+    </a>
+
+    <a href="customers.html" class="dashboard-card">
+      <h3>Customers</h3>
+      <p id="dash-customers">0</p>
+    </a>
+
+    <a href="admin.html" class="dashboard-card">
+      <h3>Products</h3>
+      <p id="dash-products">0</p>
+    </a>
+
+    <a href="suppliers.html" class="dashboard-card">
+      <h3>Suppliers Connected</h3>
+      <p id="dash-suppliers">0</p>
+    </a>
+
+    <a href="emails.html" class="dashboard-card">
+      <h3>Email Tools</h3>
+      <p>Open</p>
+    </a>
+
+  </div>
+
+</section>
+
+<script>
+const orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+const savedProducts = JSON.parse(localStorage.getItem("petsDepotProducts")) || [];
+const suppliers = JSON.parse(localStorage.getItem("petsDepotSuppliers")) || {};
+
+let totalSales = 0;
+let customers = {};
+
+orders.forEach(order => {
+  totalSales += Number(order.total) || 0;
+  customers[order.customer.email] = true;
+});
+
+let connectedSuppliers = 0;
+
+["cj", "zendrop", "spocket"].forEach(name => {
+  if (suppliers[name]) connectedSuppliers++;
+});
+
+document.getElementById("dash-sales").innerText = "$" + totalSales.toFixed(2);
+document.getElementById("dash-orders").innerText = orders.length;
+document.getElementById("dash-customers").innerText = Object.keys(customers).length;
+document.getElementById("dash-products").innerText = 4 + savedProducts.length;
+document.getElementById("dash-suppliers").innerText = connectedSuppliers;
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

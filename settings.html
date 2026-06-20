@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settings — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Store Settings</h1>
+    <p>Update your store information.</p>
+  </div>
+
+  <div class="settings-box">
+
+    <label>Store Name</label>
+    <input id="store-name" type="text" placeholder="PetsDepot">
+
+    <label>Store Email</label>
+    <input id="store-email" type="email" placeholder="support@petsdepot.com">
+
+    <label>Store Phone</label>
+    <input id="store-phone" type="text" placeholder="123-456-7890">
+
+    <label>Shipping Message</label>
+    <textarea id="shipping-message" placeholder="Free shipping on orders over $50"></textarea>
+
+    <button onclick="saveSettings()">Save Settings</button>
+    <button class="clear-btn" onclick="resetSettings()">Reset Settings</button>
+
+  </div>
+
+</section>
+
+<script>
+let settings = JSON.parse(localStorage.getItem("petsDepotSettings")) || {
+  storeName: "PetsDepot",
+  storeEmail: "support@petsdepot.com",
+  storePhone: "123-456-7890",
+  shippingMessage: "Free shipping on orders over $50"
+};
+
+document.getElementById("store-name").value = settings.storeName;
+document.getElementById("store-email").value = settings.storeEmail;
+document.getElementById("store-phone").value = settings.storePhone;
+document.getElementById("shipping-message").value = settings.shippingMessage;
+
+function saveSettings() {
+  const newSettings = {
+    storeName: document.getElementById("store-name").value,
+    storeEmail: document.getElementById("store-email").value,
+    storePhone: document.getElementById("store-phone").value,
+    shippingMessage: document.getElementById("shipping-message").value
+  };
+
+  localStorage.setItem("petsDepotSettings", JSON.stringify(newSettings));
+
+  alert("Settings saved successfully!");
+}
+
+function resetSettings() {
+  localStorage.removeItem("petsDepotSettings");
+  alert("Settings reset. Refresh the page.");
+}
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

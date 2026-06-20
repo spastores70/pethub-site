@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orders — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 PetsDepot Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+  <div class="admin-header">
+    <h1>Orders Dashboard</h1>
+    <p>Manage customer orders and send them to supplier.</p>
+  </div>
+
+  <div id="orders-list" class="orders-list"></div>
+</section>
+
+<script>
+function adminToken() {
+  return localStorage.getItem("petsDepotAdminToken") ||
+         sessionStorage.getItem("petsDepotAdminToken") || "";
+}
+
+function authHeaders() {
+  return {
+    "Content-Type":  "application/json",
+    "Authorization": "Bearer " + adminToken()
+  };
+}
+
+async function loadOrders() {
+  const list = document.getElementById("orders-list");
+  list.innerHTML = "<div class='empty-box'>Loading orders…</div>";
+
+  try {
+    const res    = await fetch("/api/orders", { headers: authHeaders() });
+    const orders = await res.json();
+    renderOrders(orders);
+  } catch (err) {
+    list.innerHTML = "<div class='empty-box'>Failed to load orders.</div>";
+    console.error(err);
+  }
+}
+
+function renderOrders(orders) {
+  const list = document.getElementById("orders-list");
+
+  if (!orders || orders.length === 0) {
+    list.innerHTML = "<div class='empty-box'>No orders yet.</div>";
+    return;
+  }
+
+  const statuses = ["Pending Payment","Paid","Sent to Supplier","Fulfillment Failed","Shipped","Delivered","Cancelled"];
+  let html = "";
+
+  orders.forEach(order => {
+    const date      = new Date(order.created_at).toLocaleString();
+    const itemsHtml = (order.items || [])
+      .map(i => `<li>${i.name} — $${Number(i.price).toFixed(2)}</li>`)
+      .join("");
+    const statusOptions = statuses
+      .map(s => `<option ${order.status === s ? "selected" : ""}>${s}</option>`)
+      .join("");
+
+    html += `
+      <div class="order-card">
+        <div class="order-top">
+          <div>
+            <h2>Order #${order.id}</h2>
+            <p>${date}</p>
+          </div>
+          <select onchange="updateStatus(${order.id}, this.value)">
+            ${statusOptions}
+          </select>
+        </div>
+
+        <div class="order-grid">
+          <div>
+            <h3>Customer</h3>
+            <p><strong>${order.customer_name}</strong></p>
+            <p>${order.customer_email}</p>
+            <p>${order.customer_phone}</p>
+          </div>
+          <div>
+            <h3>Shipping</h3>
+            <p>${order.customer_address}</p>
+            <p>${order.customer_city}, ${order.customer_state} ${order.customer_zip}</p>
+          </div>
+          <div>
+            <h3>Items</h3>
+            <ul>${itemsHtml}</ul>
+          </div>
+          <div>
+            <h3>Total</h3>
+            <p class="order-total">$${Number(order.total).toFixed(2)}</p>
+          </div>
+        </div>
+
+        <div class="supplier-actions">
+          <button onclick="sendToSupplier(${order.id})">Send to Supplier</button>
+          <button onclick="addTracking(${order.id})">Add Tracking</button>
+        </div>
+
+        <div class="tracking-box">
+          <strong>Supplier:</strong> ${order.supplier || "Not assigned"}<br>
+          <strong>Tracking:</strong> ${order.tracking || "No tracking yet"}<br>
+          ${order.cj_order_id ? `<strong>CJ Order ID:</strong> ${order.cj_order_id}` : ""}
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+async function updateStatus(orderId, newStatus) {
+  await fetch(`/api/orders/${orderId}`, {
+    method:  "PATCH",
+    headers: authHeaders(),
+    body:    JSON.stringify({ status: newStatus })
+  });
+  loadOrders();
+}
+
+async function sendToSupplier(orderId) {
+  const btn = event.target;
+  btn.disabled   = true;
+  btn.textContent = "Sending…";
+
+  try {
+    const res  = await fetch(`/api/fulfill/${orderId}`, {
+      method:  "POST",
+      headers: authHeaders()
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      alert("Fulfillment failed: " + data.error);
+    } else {
+      alert("Order sent to CJ Dropshipping. CJ Order ID: " + (data.cj_order_id || "pending"));
+    }
+  } catch (err) {
+    alert("Request failed.");
+  }
+
+  loadOrders();
+}
+
+async function addTracking(orderId) {
+  const tracking = prompt("Enter tracking number:");
+  if (!tracking) return;
+
+  await fetch(`/api/orders/${orderId}`, {
+    method:  "PATCH",
+    headers: authHeaders(),
+    body:    JSON.stringify({ status: "Shipped", tracking })
+  });
+  loadOrders();
+}
+
+loadOrders();
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

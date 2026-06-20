@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reset Password — PetsDepot Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<section class="login-page">
+  <div class="login-box">
+    <h1>🐾 Reset Password</h1>
+    <p>Set a new admin password</p>
+
+    <input id="new-password" type="password" placeholder="New Password">
+    <input id="confirm-password" type="password" placeholder="Confirm New Password">
+
+    <button onclick="resetPassword()">Set New Password</button>
+
+    <small><a href="login.html">Back to Login</a></small>
+  </div>
+</section>
+
+<script>
+function resetPassword() {
+  const newPassword = document.getElementById("new-password").value;
+  const confirmPassword = document.getElementById("confirm-password").value;
+
+  if (!newPassword) {
+    alert("Please enter a new password.");
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    alert("Password must be at least 6 characters.");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("Passwords do not match.");
+    return;
+  }
+
+  localStorage.setItem("petsDepotAdminPassword", newPassword);
+  alert("Password updated! Please log in with your new password.");
+  window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

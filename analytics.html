@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analytics — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+ <li><a href="suppliers.html">Suppliers</a></li>
+    <li><a href="emails.html">Emails</a></li>
+  </ul>
+</nav>
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+   
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Analytics</h1>
+    <p>Track sales, orders, customers, and best sellers.</p>
+  </div>
+
+  <div class="analytics-grid">
+
+    <div class="analytics-card">
+      <h3>Total Sales</h3>
+      <p id="total-sales">$0.00</p>
+    </div>
+
+    <div class="analytics-card">
+      <h3>Total Orders</h3>
+      <p id="total-orders">0</p>
+    </div>
+
+    <div class="analytics-card">
+      <h3>Total Customers</h3>
+      <p id="total-customers">0</p>
+    </div>
+
+    <div class="analytics-card">
+      <h3>Best Seller</h3>
+      <p id="best-seller">None</p>
+    </div>
+
+  </div>
+
+  <div class="analytics-table-box">
+    <h2>Product Sales</h2>
+    <div id="product-sales"></div>
+  </div>
+
+</section>
+
+<script>
+let orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+
+let totalSales = 0;
+let customers = {};
+let products = {};
+
+orders.forEach(order => {
+  totalSales += order.total;
+
+  customers[order.customer.email] = true;
+
+  order.items.forEach(item => {
+    if (!products[item.name]) {
+      products[item.name] = {
+        name: item.name,
+        quantity: 0,
+        sales: 0
+      };
+    }
+
+    products[item.name].quantity += 1;
+    products[item.name].sales += item.price;
+  });
+});
+
+let productArray = Object.values(products);
+
+productArray.sort((a, b) => b.quantity - a.quantity);
+
+document.getElementById("total-sales").innerText = "$" + totalSales.toFixed(2);
+document.getElementById("total-orders").innerText = orders.length;
+document.getElementById("total-customers").innerText = Object.keys(customers).length;
+document.getElementById("best-seller").innerText = productArray.length ? productArray[0].name : "None";
+
+let productSalesBox = document.getElementById("product-sales");
+
+if (productArray.length === 0) {
+  productSalesBox.innerHTML = "<p>No product sales yet.</p>";
+} else {
+  let html = `
+    <table class="analytics-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Quantity Sold</th>
+          <th>Sales</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  productArray.forEach(product => {
+    html += `
+      <tr>
+        <td>${product.name}</td>
+        <td>${product.quantity}</td>
+        <td>$${product.sales.toFixed(2)}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  productSalesBox.innerHTML = html;
+}
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

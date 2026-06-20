@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin Dashboard — Petshub</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Product Catalog</h1>
+    <p>Add and preview PetsDepot products.</p>
+  </div>
+
+  <div class="admin-grid">
+
+    <div class="admin-form">
+
+      <h2>Import from CJ Dropshipping</h2>
+      <p class="import-hint">Find a product on <strong>cjdropshipping.com</strong>, copy its product ID from the URL, and paste it below.</p>
+      <input id="cj-pid"      type="text"   placeholder="CJ Product ID (pid)">
+      <input id="cj-price"    type="number" placeholder="Your selling price ($)">
+      <input id="cj-badge"    type="text"   placeholder="Badge: Best Seller, New, etc.">
+      <input id="cj-category" type="text"   placeholder="Category: Dogs or Cats">
+      <button onclick="importFromCJ()">Import from CJ</button>
+
+      <hr class="form-divider">
+
+      <h2 id="form-title">Add Product Manually</h2>
+
+      <input id="product-name" type="text" placeholder="Product Name">
+      <input id="product-price" type="number" placeholder="Price">
+      <input id="product-category" type="text" placeholder="Category: Dogs or Cats">
+      <input id="product-badge" type="text" placeholder="Badge: Best Seller, Trending, etc.">
+      <input id="product-image" type="text" placeholder="Image path: assets/product5.jpg">
+      <textarea id="product-description" placeholder="Product Description"></textarea>
+
+      <button id="submit-btn" onclick="addAdminProduct()">Add Product</button>
+      <button id="cancel-btn" class="cancel-edit-btn hidden" onclick="cancelEdit()">Cancel Edit</button>
+      <button class="clear-btn" onclick="clearProducts()">Clear All Products</button>
+    </div>
+
+    <div class="admin-products">
+      <h2>Catalog Preview</h2>
+      <div class="product-grid" id="admin-product-list"></div>
+    </div>
+
+  </div>
+
+</section>
+
+<script>
+function adminToken() {
+  return localStorage.getItem("petsDepotAdminToken") ||
+         sessionStorage.getItem("petsDepotAdminToken") || "";
+}
+
+async function importFromCJ() {
+  const pid      = document.getElementById("cj-pid").value.trim();
+  const price    = document.getElementById("cj-price").value.trim();
+  const badge    = document.getElementById("cj-badge").value.trim();
+  const category = document.getElementById("cj-category").value.trim();
+
+  if (!pid || !price) {
+    alert("CJ Product ID and your selling price are required.");
+    return;
+  }
+
+  const btn = event.target;
+  btn.disabled    = true;
+  btn.textContent = "Importing…";
+
+  try {
+    const res  = await fetch("/api/import-product", {
+      method:  "POST",
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer " + adminToken()
+      },
+      body: JSON.stringify({ pid, price: Number(price), badge, category })
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      alert("Import failed: " + data.error);
+    } else {
+      alert(`Imported: ${data.name}`);
+      document.getElementById("cj-pid").value      = "";
+      document.getElementById("cj-price").value    = "";
+      document.getElementById("cj-badge").value    = "";
+      document.getElementById("cj-category").value = "";
+      renderAdminProducts();
+    }
+  } catch (err) {
+    alert("Request failed. Is the server running?");
+  }
+
+  btn.disabled    = false;
+  btn.textContent = "Import from CJ";
+}
+
+let defaultProducts = [
+  { id: 1, name: "Orthopedic Dog Bed", price: 49.99, category: "Dogs", badge: "Best Seller", description: "Luxury memory foam bed", image: "assets/product1.jpg" },
+  { id: 2, name: "Pet Water Fountain", price: 29.99, category: "Cats", badge: "Trending", description: "Fresh water all day", image: "assets/product2.jpg" },
+  { id: 3, name: "Slow Feeder Bowl", price: 18.99, category: "Dogs", badge: "Popular", description: "Healthy feeding bowl", image: "assets/product3.jpg" },
+  { id: 4, name: "Interactive Cat Toy", price: 16.99, category: "Cats", badge: "Cat Pick", description: "Keep cats active", image: "assets/product4.jpg" }
+];
+
+let savedProducts     = JSON.parse(localStorage.getItem("petsDepotProducts"))       || [];
+let deletedDefaultIds = JSON.parse(localStorage.getItem("petsDepotDeletedDefaults")) || [];
+let defaultEdits      = JSON.parse(localStorage.getItem("petsDepotDefaultEdits"))    || {};
+
+let editingId = null;
+let editingIsDefault = false;
+
+function getAllProducts() {
+  const activeDefaults = defaultProducts
+    .filter(p => !deletedDefaultIds.includes(p.id))
+    .map(p => ({ ...p, ...defaultEdits[p.id] }));
+  return [...activeDefaults, ...savedProducts];
+}
+
+function saveData() {
+  localStorage.setItem("petsDepotProducts",       JSON.stringify(savedProducts));
+  localStorage.setItem("petsDepotDeletedDefaults", JSON.stringify(deletedDefaultIds));
+  localStorage.setItem("petsDepotDefaultEdits",    JSON.stringify(defaultEdits));
+}
+
+function renderAdminProducts() {
+  const list = document.getElementById("admin-product-list");
+  let html = "";
+
+  getAllProducts().forEach(product => {
+    html += `
+      <div class="product-card">
+        <img src="${product.image}">
+        <span class="badge">${product.badge}</span>
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        <div class="price">$${Number(product.price).toFixed(2)}</div>
+        <small>${product.category}</small>
+        <div class="product-actions">
+          <button class="edit-btn" onclick="editProduct(${product.id})">Edit</button>
+          <button class="delete-btn" onclick="deleteProduct(${product.id})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+function editProduct(id) {
+  const product = getAllProducts().find(p => p.id === id);
+  if (!product) return;
+
+  editingId = id;
+  editingIsDefault = defaultProducts.some(p => p.id === id);
+
+  document.getElementById("product-name").value        = product.name;
+  document.getElementById("product-price").value       = product.price;
+  document.getElementById("product-category").value    = product.category;
+  document.getElementById("product-badge").value       = product.badge;
+  document.getElementById("product-image").value       = product.image;
+  document.getElementById("product-description").value = product.description;
+
+  document.getElementById("form-title").innerText  = "Edit Product";
+  document.getElementById("submit-btn").innerText  = "Save Changes";
+  document.getElementById("cancel-btn").classList.remove("hidden");
+
+  document.getElementById("product-name").scrollIntoView({ behavior: "smooth" });
+}
+
+function cancelEdit() {
+  editingId = null;
+  editingIsDefault = false;
+
+  document.getElementById("product-name").value        = "";
+  document.getElementById("product-price").value       = "";
+  document.getElementById("product-category").value    = "";
+  document.getElementById("product-badge").value       = "";
+  document.getElementById("product-image").value       = "";
+  document.getElementById("product-description").value = "";
+
+  document.getElementById("form-title").innerText = "Add Product";
+  document.getElementById("submit-btn").innerText = "Add Product";
+  document.getElementById("cancel-btn").classList.add("hidden");
+}
+
+function deleteProduct(id) {
+  if (!confirm("Delete this product?")) return;
+
+  if (defaultProducts.some(p => p.id === id)) {
+    deletedDefaultIds.push(id);
+  } else {
+    savedProducts = savedProducts.filter(p => p.id !== id);
+  }
+
+  saveData();
+  if (editingId === id) cancelEdit();
+  renderAdminProducts();
+}
+
+function addAdminProduct() {
+  const name        = document.getElementById("product-name").value;
+  const price       = document.getElementById("product-price").value;
+  const category    = document.getElementById("product-category").value;
+  const badge       = document.getElementById("product-badge").value;
+  const image       = document.getElementById("product-image").value;
+  const description = document.getElementById("product-description").value;
+
+  if (!name || !price || !category || !image || !description) {
+    alert("Please complete all product fields.");
+    return;
+  }
+
+  if (editingId !== null) {
+    const updated = { name, price: Number(price), category, badge: badge || "New", image, description };
+
+    if (editingIsDefault) {
+      defaultEdits[editingId] = updated;
+    } else {
+      savedProducts = savedProducts.map(p => p.id === editingId ? { ...p, ...updated } : p);
+    }
+  } else {
+    savedProducts.push({
+      id: Date.now(),
+      name,
+      price: Number(price),
+      category,
+      badge: badge || "New",
+      image,
+      description
+    });
+  }
+
+  saveData();
+  cancelEdit();
+  renderAdminProducts();
+}
+
+function clearProducts() {
+  localStorage.removeItem("petsDepotProducts");
+  localStorage.removeItem("petsDepotDeletedDefaults");
+  localStorage.removeItem("petsDepotDefaultEdits");
+  savedProducts     = [];
+  deletedDefaultIds = [];
+  defaultEdits      = {};
+  cancelEdit();
+  renderAdminProducts();
+}
+
+renderAdminProducts();
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

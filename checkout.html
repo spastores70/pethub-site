@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Checkout — Petshub</title>
+
+<link rel="stylesheet"
+href="styles.css">
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub
+
+</div>
+
+</nav>
+
+<section class="checkout-page">
+
+<div class="checkout-container">
+
+<div class="checkout-form">
+
+<h1>
+
+Checkout
+
+</h1>
+
+<p>
+
+Complete your order below
+
+</p>
+
+<div class="field">
+
+<label>
+
+Full Name
+
+</label>
+
+<input
+id="full-name"
+type="text"
+placeholder="John Smith">
+
+</div>
+
+<div class="field">
+
+<label>
+
+Email
+
+</label>
+
+<input
+id="email"
+type="email"
+placeholder="john@email.com">
+
+</div>
+
+<div class="field">
+
+<label>
+
+Phone Number
+
+</label>
+
+<input
+id="phone"
+type="text"
+placeholder="(555) 555-5555">
+
+</div>
+
+<div class="field">
+
+<label>
+
+Address
+
+</label>
+
+<input
+id="address"
+type="text"
+placeholder="123 Main Street">
+
+</div>
+
+<div class="row">
+
+<div class="field">
+
+<label>
+
+City
+
+</label>
+
+<input
+id="city"
+type="text"
+placeholder="Dallas">
+
+</div>
+
+<div class="field">
+
+<label>
+
+State
+
+</label>
+
+<input
+id="state"
+type="text"
+placeholder="TX">
+
+</div>
+
+<div class="field">
+
+<label>
+
+ZIP
+
+</label>
+
+<input
+id="zip"
+type="text"
+placeholder="76039">
+
+</div>
+
+</div>
+
+<button
+class="pay-btn"
+
+onclick="payWithCard()">
+
+💳 Pay with Card
+
+</button>
+
+</div>
+
+<div class="order-box">
+
+<h2>
+
+Order Summary
+
+</h2>
+
+<div
+id="checkout-items">
+
+</div>
+
+<div class="summary-total">
+
+<span>
+
+Total
+
+</span>
+
+<span
+id="checkout-total">
+
+$0.00
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<script>
+
+let cart=
+
+JSON.parse(
+
+localStorage.getItem(
+"petsDepotCart"
+)
+
+)||[]
+
+let total=0
+
+let html=""
+
+cart.forEach(
+item=>{
+
+total+=
+item.price
+
+html+=`
+
+<div
+class="summary-row">
+
+<span>
+
+${item.name}
+
+</span>
+
+<strong>
+
+$${item.price}
+
+</strong>
+
+</div>
+
+`
+
+})
+
+document
+.getElementById(
+"checkout-items"
+)
+
+.innerHTML=
+
+html||
+
+"<p>No items</p>"
+
+document
+.getElementById(
+"checkout-total"
+)
+
+.innerText=
+
+"$"+
+
+total.toFixed(2)
+
+async function payWithCard(){
+
+if(cart.length===0){
+alert("Your cart is empty.")
+return
+}
+
+const fields={
+"full-name":"name",
+"email":"email",
+"phone":"phone",
+"address":"address",
+"city":"city",
+"state":"state",
+"zip":"zip"
+}
+
+const customer={}
+
+for(const[id,key] of Object.entries(fields)){
+const val=document.getElementById(id).value.trim()
+if(!val){
+alert("Please complete all fields")
+return
+}
+customer[key]=val
+}
+
+const btn=document.querySelector(".pay-btn")
+btn.disabled=true
+btn.textContent="Processing..."
+
+try{
+
+const res=await fetch("/api/checkout",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({customer,cart})
+})
+
+const data=await res.json()
+
+if(data.error){
+alert(data.error)
+btn.disabled=false
+btn.textContent="💳 Pay with Card"
+return
+}
+
+// Redirect to Stripe hosted checkout — card details never touch this server
+window.location.href=data.url
+
+}catch(err){
+alert("Something went wrong. Please try again.")
+btn.disabled=false
+btn.textContent="💳 Pay with Card"
+}
+
+}
+
+</script>
+
+</body>
+
+</html>

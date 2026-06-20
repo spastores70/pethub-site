@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Customers — Petshub Admin</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<script>
+
+if(
+
+localStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+&&
+
+sessionStorage.getItem(
+"petsDepotAdminLoggedIn"
+)!=="true"
+
+){
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub Admin
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Store
+</a>
+</li>
+
+<li>
+<a href="dashboard.html">
+Dashboard
+</a>
+</li>
+
+<li>
+<a href="admin.html">
+Products
+</a>
+</li>
+
+<li>
+<a href="orders.html">
+Orders
+</a>
+</li>
+
+<li>
+<a href="customers.html">
+Customers
+</a>
+</li>
+
+<li>
+<a href="analytics.html">
+Analytics
+</a>
+</li>
+
+<li>
+<a href="settings.html">
+Settings
+</a>
+</li>
+
+<li>
+<a href="suppliers.html">
+Suppliers
+</a>
+</li>
+
+<li>
+<a href="emails.html">
+Emails
+</a>
+</li>
+
+<li>
+
+<button
+type="button"
+onclick="logout()"
+class="logout-btn">
+
+Logout
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<section class="admin-page">
+
+  <div class="admin-header">
+    <h1>Customers</h1>
+    <p>View customers from completed checkout forms.</p>
+  </div>
+
+  <div id="customers-list" class="customers-list"></div>
+
+</section>
+
+<script>
+let orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+
+function getCustomers() {
+  const customerMap = {};
+
+  orders.forEach(order => {
+    const email = order.customer.email;
+
+    if (!customerMap[email]) {
+      customerMap[email] = {
+        name: order.customer.name,
+        email: order.customer.email,
+        phone: order.customer.phone,
+        address: order.customer.address,
+        city: order.customer.city,
+        state: order.customer.state,
+        zip: order.customer.zip,
+        totalOrders: 0,
+        totalSpent: 0
+      };
+    }
+
+    customerMap[email].totalOrders += 1;
+    customerMap[email].totalSpent += order.total;
+  });
+
+  return Object.values(customerMap);
+}
+
+function renderCustomers() {
+  const list = document.getElementById("customers-list");
+  const customers = getCustomers();
+
+  if (customers.length === 0) {
+    list.innerHTML = "<div class='empty-box'>No customers yet.</div>";
+    return;
+  }
+
+  let html = "";
+
+  customers.forEach(customer => {
+    html += `
+      <div class="customer-card">
+        <div>
+          <h2>${customer.name}</h2>
+          <p>${customer.email}</p>
+          <p>${customer.phone}</p>
+        </div>
+
+        <div>
+          <h3>Shipping Address</h3>
+          <p>${customer.address}</p>
+          <p>${customer.city}, ${customer.state} ${customer.zip}</p>
+        </div>
+
+        <div>
+          <h3>Total Orders</h3>
+          <p class="customer-number">${customer.totalOrders}</p>
+        </div>
+
+        <div>
+          <h3>Total Spent</h3>
+          <p class="customer-spent">$${customer.totalSpent.toFixed(2)}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+}
+
+renderCustomers();
+</script>
+
+<script>
+
+function logout(){
+
+localStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+sessionStorage.removeItem(
+
+"petsDepotAdminLoggedIn"
+
+)
+
+localStorage.removeItem("petsDepotAdminToken")
+
+sessionStorage.removeItem("petsDepotAdminToken")
+
+window.location.href=
+
+"login.html"
+
+}
+
+</script>
+
+</body>
+</html>

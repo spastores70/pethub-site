@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Track Order — Petshub</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">🐾 Petshub</div>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="track.html">Track Order</a></li>
+  </ul>
+</nav>
+
+<section class="track-page">
+
+  <div class="track-box">
+    <h1>Track Your Order</h1>
+    <p>Enter your order number and email address.</p>
+
+    <input id="track-order-id" type="text" placeholder="Order Number">
+    <input id="track-email" type="email" placeholder="Email Address">
+
+    <button onclick="trackOrder()">Track Order</button>
+
+    <div id="track-result"></div>
+  </div>
+
+</section>
+
+<script>
+function trackOrder() {
+  const orderId = document.getElementById("track-order-id").value;
+  const email = document.getElementById("track-email").value.toLowerCase();
+
+  const orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+
+  const order = orders.find(order =>
+    String(order.id) === String(orderId) &&
+    order.customer.email.toLowerCase() === email
+  );
+
+  const result = document.getElementById("track-result");
+
+  if (!order) {
+    result.innerHTML = `
+      <div class="track-result error">
+        No order found. Please check your order number and email.
+      </div>
+    `;
+    return;
+  }
+
+  let itemsHtml = "";
+
+  order.items.forEach(item => {
+    itemsHtml += `<li>${item.name} - $${Number(item.price).toFixed(2)}</li>`;
+  });
+
+  result.innerHTML = `
+    <div class="track-result">
+      <h2>Order #${order.id}</h2>
+      <p><strong>Status:</strong> ${order.status}</p>
+      <p><strong>Supplier:</strong> ${order.supplier || "Preparing order"}</p>
+      <p><strong>Tracking:</strong> ${order.tracking || "Tracking not available yet"}</p>
+      <p><strong>Total:</strong> $${Number(order.total).toFixed(2)}</p>
+
+      <h3>Items</h3>
+      <ul>${itemsHtml}</ul>
+    </div>
+  `;
+}
+</script>
+
+</body>
+</html>

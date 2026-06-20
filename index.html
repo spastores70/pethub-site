@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Petshub</title>
+
+<link rel="stylesheet"
+href="styles.css">
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+
+🐾 Petshub
+
+</div>
+
+<ul>
+
+<li>
+<a href="index.html">
+Home
+</a>
+</li>
+
+<li>
+<a href="#products">
+Products
+</a>
+</li>
+
+<li>
+<a href="track.html">
+Track Order
+</a>
+</li>
+
+<li>
+<a href="login.html">Admin</a>
+</li>
+
+<li>
+
+<button
+class="cart-nav"
+onclick="openCart()">
+
+🛒 Cart
+
+(<span id="cart-count">
+
+0
+
+</span>)
+
+</button>
+
+</li>
+
+</ul>
+
+</nav>
+
+<div class="shipping-banner">
+
+Free shipping on orders over $50
+
+</div>
+
+<section class="hero">
+
+<h1>
+
+Everything Pets Love
+
+</h1>
+
+<p>
+
+Premium pet products delivered to your door
+
+</p>
+
+<a
+class="btn"
+href="#products">
+
+Shop Now
+
+</a>
+
+</section>
+
+<section
+class="products"
+
+id="products">
+
+<h2 class="title">
+
+Popular Products
+
+</h2>
+
+<div
+class="product-grid"
+
+id="product-list">
+
+</div>
+
+</section>
+
+<div
+class="cart-panel"
+
+id="cart-panel">
+
+<div class="cart-header">
+
+<h2>
+
+Your Cart
+
+</h2>
+
+<button
+onclick="closeCart()">
+
+✕
+
+</button>
+
+</div>
+
+<div
+id="cart-items">
+
+</div>
+
+<div class="cart-total">
+
+<strong>
+
+Total
+
+</strong>
+
+<span
+id="cart-total">
+
+$0.00
+
+</span>
+
+</div>
+
+<button
+class="checkout-btn"
+
+onclick="goToCheckout()">
+
+Checkout
+
+</button>
+
+</div>
+
+<div
+class="cart-overlay"
+
+id="cart-overlay"
+
+onclick="closeCart()">
+
+</div>
+
+<footer>
+
+© 2026 PetsDepot.com
+
+</footer>
+
+<script>
+
+async function loadAndRenderProducts(){
+try{
+const res=await fetch("/api/products")
+const products=await res.json()
+renderProducts(products)
+}catch(err){
+console.error("Could not load products:",err)
+renderProducts([])
+}
+}
+
+let cart=
+
+JSON.parse(
+
+localStorage.getItem(
+"petsDepotCart"
+)
+
+)||[]
+
+function renderProducts(products){
+
+const list=document.getElementById("product-list")
+
+if(!products||products.length===0){
+list.innerHTML="<p style='text-align:center;color:#999;padding:40px'>No products available.</p>"
+return
+}
+
+let html=""
+
+products.forEach(product=>{
+
+html+=`
+
+<div class="product-card">
+
+<img src="${product.image}">
+
+<span class="badge">${product.badge||"New"}</span>
+
+<h3>${product.name}</h3>
+
+<p>${product.description}</p>
+
+<div class="price">$${Number(product.price).toFixed(2)}</div>
+
+<button onclick='addToCart(${JSON.stringify(product.name)},${Number(product.price)},${JSON.stringify(product.cj_vid||null)})'>
+
+Add to Cart
+
+</button>
+
+</div>
+
+`
+
+})
+
+list.innerHTML=html
+
+}
+
+function addToCart(
+name,
+price,
+cj_vid
+){
+
+cart.push({
+
+name,
+price,
+cj_vid
+
+})
+
+localStorage.setItem(
+
+"petsDepotCart",
+
+JSON.stringify(
+cart
+)
+
+)
+
+updateCart()
+
+openCart()
+
+}
+
+function updateCart(){
+
+document
+.getElementById(
+"cart-count"
+)
+
+.innerText=
+
+cart.length
+
+let total=0
+
+let html=""
+
+cart.forEach(
+
+(item,index)=>{
+
+total+=
+item.price
+
+html+=`
+
+<div
+class="cart-item">
+
+<div>
+
+<h4>
+
+${item.name}
+
+</h4>
+
+<p>
+
+$${item.price}
+
+</p>
+
+</div>
+
+<button
+
+onclick=
+
+"removeItem(
+
+${index}
+
+)">
+
+Remove
+
+</button>
+
+</div>
+
+`
+
+}
+
+)
+
+document
+.getElementById(
+"cart-items"
+)
+
+.innerHTML=
+
+html||
+
+"<p>Your cart is empty</p>"
+
+document
+.getElementById(
+"cart-total"
+)
+
+.innerText=
+
+"$"+
+
+total.toFixed(2)
+
+}
+
+function removeItem(
+i
+){
+
+cart.splice(
+i,
+1
+)
+
+localStorage.setItem(
+
+"petsDepotCart",
+
+JSON.stringify(
+cart
+)
+
+)
+
+updateCart()
+
+}
+
+function openCart(){
+
+document
+.getElementById(
+"cart-panel"
+)
+
+.classList
+.add(
+"active"
+)
+
+document
+.getElementById(
+"cart-overlay"
+)
+
+.classList
+.add(
+"active"
+)
+
+}
+
+function closeCart(){
+
+document
+.getElementById(
+"cart-panel"
+)
+
+.classList
+.remove(
+"active"
+)
+
+document
+.getElementById(
+"cart-overlay"
+)
+
+.classList
+.remove(
+"active"
+)
+
+}
+
+function goToCheckout(){
+
+if(
+cart.length===0
+){
+
+alert(
+"Cart is empty"
+)
+
+return
+
+}
+
+window.location.href=
+
+"checkout.html"
+
+}
+
+loadAndRenderProducts()
+
+updateCart()
+
+</script>
+
+</body>
+
+</html>
