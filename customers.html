@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -126,7 +126,7 @@ Logout
 </section>
 
 <script>
-let orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+let orders = JSON.parse(localStorage.getItem("petsHubOrders")) || [];
 
 function getCustomers() {
   const customerMap = {};
@@ -206,19 +206,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

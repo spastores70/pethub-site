@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -118,7 +118,7 @@ Logout
 
   <div class="admin-header">
     <h1>Admin Dashboard</h1>
-    <p>Quick overview of your PetsDepot store.</p>
+    <p>Quick overview of your Petshub store.</p>
   </div>
 
   <div class="dashboard-grid">
@@ -158,9 +158,9 @@ Logout
 </section>
 
 <script>
-const orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
-const savedProducts = JSON.parse(localStorage.getItem("petsDepotProducts")) || [];
-const suppliers = JSON.parse(localStorage.getItem("petsDepotSuppliers")) || {};
+const orders = JSON.parse(localStorage.getItem("petsHubOrders")) || [];
+const savedProducts = JSON.parse(localStorage.getItem("petsHubProducts")) || [];
+const suppliers = JSON.parse(localStorage.getItem("petsHubSuppliers")) || {};
 
 let totalSales = 0;
 let customers = {};
@@ -189,19 +189,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

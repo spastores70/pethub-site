@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -124,10 +124,10 @@ Logout
   <div class="settings-box">
 
     <label>Store Name</label>
-    <input id="store-name" type="text" placeholder="PetsDepot">
+    <input id="store-name" type="text" placeholder="Petshub">
 
     <label>Store Email</label>
-    <input id="store-email" type="email" placeholder="support@petsdepot.com">
+    <input id="store-email" type="email" placeholder="support@petshub.com">
 
     <label>Store Phone</label>
     <input id="store-phone" type="text" placeholder="123-456-7890">
@@ -143,9 +143,9 @@ Logout
 </section>
 
 <script>
-let settings = JSON.parse(localStorage.getItem("petsDepotSettings")) || {
-  storeName: "PetsDepot",
-  storeEmail: "support@petsdepot.com",
+let settings = JSON.parse(localStorage.getItem("petsHubSettings")) || {
+  storeName: "Petshub",
+  storeEmail: "support@petshub.com",
   storePhone: "123-456-7890",
   shippingMessage: "Free shipping on orders over $50"
 };
@@ -163,13 +163,13 @@ function saveSettings() {
     shippingMessage: document.getElementById("shipping-message").value
   };
 
-  localStorage.setItem("petsDepotSettings", JSON.stringify(newSettings));
+  localStorage.setItem("petsHubSettings", JSON.stringify(newSettings));
 
   alert("Settings saved successfully!");
 }
 
 function resetSettings() {
-  localStorage.removeItem("petsDepotSettings");
+  localStorage.removeItem("petsHubSettings");
   alert("Settings reset. Refresh the page.");
 }
 </script>
@@ -180,19 +180,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -180,7 +180,7 @@ Logout
 </section>
 
 <script>
-let supplierSettings = JSON.parse(localStorage.getItem("petsDepotSuppliers")) || {
+let supplierSettings = JSON.parse(localStorage.getItem("petsHubSuppliers")) || {
   cj: false,
   zendrop: false,
   spocket: false,
@@ -209,7 +209,7 @@ function updateStatus(name) {
 }
 
 function saveSupplierSettings() {
-  localStorage.setItem("petsDepotSuppliers", JSON.stringify(supplierSettings));
+  localStorage.setItem("petsHubSuppliers", JSON.stringify(supplierSettings));
 }
 
 function connectSupplier(name) {
@@ -241,19 +241,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

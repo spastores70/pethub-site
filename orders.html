@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -37,7 +37,7 @@ window.location.href=
 
 <div class="logo">
 
-🐾 PetsDepot Admin
+🐾 Petshub Admin
 
 </div>
 
@@ -125,8 +125,8 @@ Logout
 
 <script>
 function adminToken() {
-  return localStorage.getItem("petsDepotAdminToken") ||
-         sessionStorage.getItem("petsDepotAdminToken") || "";
+  return localStorage.getItem("petsHubAdminToken") ||
+         sessionStorage.getItem("petsHubAdminToken") || "";
 }
 
 function authHeaders() {
@@ -275,19 +275,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

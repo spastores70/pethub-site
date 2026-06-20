@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Login — PetsDepot</title>
+<title>Admin Login — Petshub</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -11,7 +11,7 @@
 
 <section class="login-page">
   <div class="login-box">
-    <h1>🐾 PetsDepot Admin</h1>
+    <h1>🐾 Petshub Admin</h1>
     <p>Login to manage your store</p>
 
     <input id="email" type="email" placeholder="Email">
@@ -27,7 +27,7 @@
     <button onclick="login()">Login</button>
 
     <small>
-      Demo: admin@petsdepot.com / admin123
+      Demo: admin@petshub.com / admin123
     </small>
   </div>
 </section>
@@ -38,15 +38,15 @@ function login() {
   const password = document.getElementById("password").value;
   const remember = document.getElementById("remember-me").checked;
 
-  const storedPassword = localStorage.getItem("petsDepotAdminPassword") || "admin123";
+  const storedPassword = localStorage.getItem("petsHubAdminPassword") || "admin123";
 
-  if (email === "admin@petsdepot.com" && password === storedPassword) {
+  if (email === "admin@petshub.com" && password === storedPassword) {
     if (remember) {
-      localStorage.setItem("petsDepotAdminLoggedIn", "true");
-      localStorage.setItem("petsDepotAdminToken", password);
+      localStorage.setItem("petsHubAdminLoggedIn", "true");
+      localStorage.setItem("petsHubAdminToken", password);
     } else {
-      sessionStorage.setItem("petsDepotAdminLoggedIn", "true");
-      sessionStorage.setItem("petsDepotAdminToken", password);
+      sessionStorage.setItem("petsHubAdminLoggedIn", "true");
+      sessionStorage.setItem("petsHubAdminToken", password);
     }
     window.location.href = "dashboard.html";
   } else {

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reset Password — PetsDepot Admin</title>
+<title>Reset Password — Petshub Admin</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 
@@ -43,7 +43,7 @@ function resetPassword() {
     return;
   }
 
-  localStorage.setItem("petsDepotAdminPassword", newPassword);
+  localStorage.setItem("petsHubAdminPassword", newPassword);
   alert("Password updated! Please log in with your new password.");
   window.location.href = "login.html";
 }

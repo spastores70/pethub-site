@@ -38,7 +38,7 @@ function trackOrder() {
   const orderId = document.getElementById("track-order-id").value;
   const email = document.getElementById("track-email").value.toLowerCase();
 
-  const orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+  const orders = JSON.parse(localStorage.getItem("petsHubOrders")) || [];
 
   const order = orders.find(order =>
     String(order.id) === String(orderId) &&

@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -160,7 +160,7 @@ Logout
 </section>
 
 <script>
-let orders = JSON.parse(localStorage.getItem("petsDepotOrders")) || [];
+let orders = JSON.parse(localStorage.getItem("petsHubOrders")) || [];
 
 const orderSelect = document.getElementById("order-select");
 
@@ -200,12 +200,12 @@ function generateEmail() {
   let body = "";
 
   if (type === "received") {
-    subject = `Your PetsDepot Order #${order.id} Has Been Received`;
+    subject = `Your Petshub Order #${order.id} Has Been Received`;
 
     body = `
       <p>Hi ${order.customer.name},</p>
 
-      <p>Thank you for your order from PetsDepot. We received your order and it is now being prepared.</p>
+      <p>Thank you for your order from Petshub. We received your order and it is now being prepared.</p>
 
       <p><strong>Order Number:</strong> #${order.id}</p>
       <p><strong>Order Total:</strong> $${Number(order.total).toFixed(2)}</p>
@@ -213,17 +213,17 @@ function generateEmail() {
 
       <p>You can track your order anytime using your order number and email address on our Track Order page.</p>
 
-      <p>Thank you for shopping with PetsDepot!</p>
+      <p>Thank you for shopping with Petshub!</p>
     `;
   }
 
   if (type === "shipped") {
-    subject = `Your PetsDepot Order #${order.id} Has Shipped`;
+    subject = `Your Petshub Order #${order.id} Has Shipped`;
 
     body = `
       <p>Hi ${order.customer.name},</p>
 
-      <p>Good news! Your PetsDepot order has shipped.</p>
+      <p>Good news! Your Petshub order has shipped.</p>
 
       <p><strong>Order Number:</strong> #${order.id}</p>
       <p><strong>Shipping Carrier / Supplier:</strong> ${order.supplier || "Supplier preparing shipment"}</p>
@@ -231,22 +231,22 @@ function generateEmail() {
 
       <p>Please allow time for the tracking information to update.</p>
 
-      <p>Thank you for choosing PetsDepot!</p>
+      <p>Thank you for choosing Petshub!</p>
     `;
   }
 
   if (type === "delivered") {
-    subject = `Your PetsDepot Order #${order.id} Was Delivered`;
+    subject = `Your Petshub Order #${order.id} Was Delivered`;
 
     body = `
       <p>Hi ${order.customer.name},</p>
 
-      <p>Your PetsDepot order has been marked as delivered.</p>
+      <p>Your Petshub order has been marked as delivered.</p>
 
       <p><strong>Order Number:</strong> #${order.id}</p>
       <p><strong>Delivered To:</strong> ${order.customer.address}, ${order.customer.city}, ${order.customer.state} ${order.customer.zip}</p>
 
-      <p>We hope your pet loves their new products. Thank you for shopping with PetsDepot!</p>
+      <p>We hope your pet loves their new products. Thank you for shopping with Petshub!</p>
     `;
   }
 
@@ -276,19 +276,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 

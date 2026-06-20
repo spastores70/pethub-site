@@ -14,13 +14,13 @@
 if(
 
 localStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 &&
 
 sessionStorage.getItem(
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 )!=="true"
 
 ){
@@ -118,7 +118,7 @@ Logout
 
   <div class="admin-header">
     <h1>Product Catalog</h1>
-    <p>Add and preview PetsDepot products.</p>
+    <p>Add and preview Petshub products.</p>
   </div>
 
   <div class="admin-grid">
@@ -160,8 +160,8 @@ Logout
 
 <script>
 function adminToken() {
-  return localStorage.getItem("petsDepotAdminToken") ||
-         sessionStorage.getItem("petsDepotAdminToken") || "";
+  return localStorage.getItem("petsHubAdminToken") ||
+         sessionStorage.getItem("petsHubAdminToken") || "";
 }
 
 async function importFromCJ() {
@@ -215,9 +215,9 @@ let defaultProducts = [
   { id: 4, name: "Interactive Cat Toy", price: 16.99, category: "Cats", badge: "Cat Pick", description: "Keep cats active", image: "assets/product4.jpg" }
 ];
 
-let savedProducts     = JSON.parse(localStorage.getItem("petsDepotProducts"))       || [];
-let deletedDefaultIds = JSON.parse(localStorage.getItem("petsDepotDeletedDefaults")) || [];
-let defaultEdits      = JSON.parse(localStorage.getItem("petsDepotDefaultEdits"))    || {};
+let savedProducts     = JSON.parse(localStorage.getItem("petsHubProducts"))       || [];
+let deletedDefaultIds = JSON.parse(localStorage.getItem("petsHubDeletedDefaults")) || [];
+let defaultEdits      = JSON.parse(localStorage.getItem("petsHubDefaultEdits"))    || {};
 
 let editingId = null;
 let editingIsDefault = false;
@@ -230,9 +230,9 @@ function getAllProducts() {
 }
 
 function saveData() {
-  localStorage.setItem("petsDepotProducts",       JSON.stringify(savedProducts));
-  localStorage.setItem("petsDepotDeletedDefaults", JSON.stringify(deletedDefaultIds));
-  localStorage.setItem("petsDepotDefaultEdits",    JSON.stringify(defaultEdits));
+  localStorage.setItem("petsHubProducts",       JSON.stringify(savedProducts));
+  localStorage.setItem("petsHubDeletedDefaults", JSON.stringify(deletedDefaultIds));
+  localStorage.setItem("petsHubDefaultEdits",    JSON.stringify(defaultEdits));
 }
 
 function renderAdminProducts() {
@@ -349,9 +349,9 @@ function addAdminProduct() {
 }
 
 function clearProducts() {
-  localStorage.removeItem("petsDepotProducts");
-  localStorage.removeItem("petsDepotDeletedDefaults");
-  localStorage.removeItem("petsDepotDefaultEdits");
+  localStorage.removeItem("petsHubProducts");
+  localStorage.removeItem("petsHubDeletedDefaults");
+  localStorage.removeItem("petsHubDefaultEdits");
   savedProducts     = [];
   deletedDefaultIds = [];
   defaultEdits      = {};
@@ -368,19 +368,19 @@ function logout(){
 
 localStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
 sessionStorage.removeItem(
 
-"petsDepotAdminLoggedIn"
+"petsHubAdminLoggedIn"
 
 )
 
-localStorage.removeItem("petsDepotAdminToken")
+localStorage.removeItem("petsHubAdminToken")
 
-sessionStorage.removeItem("petsDepotAdminToken")
+sessionStorage.removeItem("petsHubAdminToken")
 
 window.location.href=
 
